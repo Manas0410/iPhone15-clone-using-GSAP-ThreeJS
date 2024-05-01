@@ -1,7 +1,7 @@
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useEffect, useState } from "react";
-import { smallHeroVideo, heroVideo } from "../../utils";
+import { smallHeroVideo, heroVideo } from "../utils";
 
 const Hero = () => {
   const [videoSrc, setVideoSrc] = useState(
@@ -43,7 +43,6 @@ const Hero = () => {
         </p>
         <div className="md:w-5/6 w-9/12">
           <video
-            src={videoSrc}
             autoPlay
             muted
             playsInline={true}

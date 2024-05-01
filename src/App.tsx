@@ -1,6 +1,6 @@
-import Hero from "./Components/HeroSection/Hero";
-import Highlight from "./Components/Highlights/Highlight";
-import Navbar from "./Components/Navbar/navbar";
+import Hero from "./Components/Hero";
+import Highlight from "./Components/Highlight";
+import Navbar from "./Components/navbar";
 
 function App() {
   return (
