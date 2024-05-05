@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useRef, useState } from "react";
 import { hightlightsSlides } from "../constants";
 import { pauseImg, playImg, replayImg } from "../utils";
@@ -14,7 +15,82 @@ const VideoCarousel = () => {
 
   const [videoId, setvideoId] = useState<number>(0);
   const [isPlaying, setisPlaying] = useState(true);
+  const [currentTime, setcurrentTime] = useState<number>(0);
+  const [videoProgress, setvideoProgress] = useState();
 
+  // to move video video slides
+  useGSAP(() => {
+    if (videoId > 3) return;
+    gsap.to("#sliderBanner", {
+      transform: `translateX(${-100 * videoId}%)`,
+      duration: 2,
+      ease: "power2.inOut", // show visualizer https://gsap.com/docs/v3/Eases
+    });
+  }, [videoId]);
+
+  // to change width of video buttons
+  useGSAP(() => {
+    gsap.to(sliderButtonRef.current[videoId], {
+      width:
+        window.innerWidth < 760
+          ? "10vw" // mobile
+          : window.innerWidth < 1200
+          ? "10vw" // tablet
+          : "4vw", // laptop
+      onComplete: () => {
+        gsap.to(sliderButtonRef.current[videoId], {
+          // @ts-ignore
+          delay: videoRef.current[videoId]?.duration - 0.6,
+          width: "12px",
+          backgroundColor: "#afafaf",
+        });
+      },
+    });
+  }, [videoId, isPlaying]);
+
+  // to calculate the progress in video
+  useEffect(() => {
+    const handleTimeUpdate = () => {
+      if (!isPlaying || !videoRef.current[videoId]) return;
+
+      const duration =
+        hightlightsSlides[videoId]?.videoDuration ||
+        videoRef.current[videoId].duration;
+      const currentTime = videoRef.current[videoId].currentTime;
+
+      setvideoProgress((currentTime / duration) * 100);
+    };
+
+    if (!isPlaying || !videoRef.current[videoId]) return;
+
+    videoRef.current[videoId].addEventListener("timeupdate", handleTimeUpdate);
+
+    return () => {
+      if (videoRef.current[videoId]) {
+        videoRef.current[videoId].removeEventListener(
+          "timeupdate",
+          handleTimeUpdate
+        );
+      }
+    };
+  }, [videoId, isPlaying]);
+
+  // to show the progress in video
+
+  useGSAP(() => {
+    gsap.to(sliderButtonSlideRef.current[videoId], {
+      width: `${videoProgress}%`,
+      backgroundColor: "white",
+      onComplete: () => {
+        gsap.to(sliderButtonSlideRef.current[videoId], {
+          backgroundColor: "#afafaf",
+        });
+      },
+    });
+  }, [videoProgress]);
+
+  // play the video
+  useGSAP(() => {}, [videoId, isPlaying]);
   useEffect(() => {
     if (videoId === 4) return;
     if (isPlaying) {
@@ -46,10 +122,14 @@ const VideoCarousel = () => {
     <>
       <section className="flex items-center">
         {hightlightsSlides.map((item, i) => (
-          <div key={item.id} className="relative sm:pr-20 pr-10">
+          <div
+            key={item.id}
+            className="relative sm:pr-20 pr-10"
+            id="sliderBanner"
+          >
             <div className=" video-carousel_container bg-black">
-              {/* <div className="  bg-black"> */}
               <video
+                id="video"
                 muted
                 className="w-full h-full"
                 ref={(ele) => (videoRef.current[i] = ele)}
@@ -76,7 +156,7 @@ const VideoCarousel = () => {
               ref={(ele) => (sliderButtonRef.current[i] = ele)}
             >
               <span
-                className="absolute h-full w-full rounded-full"
+                className="absolute h-full w-0 rounded-full"
                 ref={(ele) => (sliderButtonSlideRef.current[i] = ele)}
               ></span>
             </span>
