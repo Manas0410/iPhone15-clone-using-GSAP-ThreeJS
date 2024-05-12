@@ -15,7 +15,6 @@ const VideoCarousel = () => {
 
   const [videoId, setvideoId] = useState<number>(0);
   const [isPlaying, setisPlaying] = useState(true);
-  const [currentTime, setcurrentTime] = useState<number>(0);
   const [videoProgress, setvideoProgress] = useState();
 
   // to move video video slides
@@ -76,7 +75,6 @@ const VideoCarousel = () => {
   }, [videoId, isPlaying]);
 
   // to show the progress in video
-
   useGSAP(() => {
     gsap.to(sliderButtonSlideRef.current[videoId], {
       width: `${videoProgress}%`,
@@ -84,13 +82,34 @@ const VideoCarousel = () => {
       onComplete: () => {
         gsap.to(sliderButtonSlideRef.current[videoId], {
           backgroundColor: "#afafaf",
+          widows: "0%",
         });
       },
     });
   }, [videoProgress]);
 
+  // useGSAP(() => {
+  //   gsap.to("#video", {
+  //     scrollTrigger: {
+  //       trigger: "#video",
+  //       toggleActions: "restart none none none",
+  //     },
+  //     // onStart:()=>{}
+  //     onStart: () => {
+  //       if (videoId === 4) return;
+  //       if (isPlaying) {
+  //         videoRef.current[videoId]?.play();
+  //       } else {
+  //         videoRef.current[videoId]?.pause();
+  //       }
+  //     },
+  //     onComplete: () => {
+  //       setisPlaying(false);
+  //     },
+  //   });
+  // }, [videoId, isPlaying]);
+
   // play the video
-  useGSAP(() => {}, [videoId, isPlaying]);
   useEffect(() => {
     if (videoId === 4) return;
     if (isPlaying) {
@@ -119,7 +138,7 @@ const VideoCarousel = () => {
   };
 
   return (
-    <>
+    <section id="carousel-container">
       <section className="flex items-center">
         {hightlightsSlides.map((item, i) => (
           <div
@@ -176,8 +195,19 @@ const VideoCarousel = () => {
           />{" "}
         </button>
       </div>
-    </>
+    </section>
   );
 };
 
 export default VideoCarousel;
+
+/*
+scrolltrigger 
+ticker 
+toggleactions
+onupdate 
+oncomplete
+anim functions
+
+canvas 
+*/
